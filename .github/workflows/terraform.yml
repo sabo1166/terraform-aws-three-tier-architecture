@@ -1,3 +1,4 @@
+
 name: Terraform Deploy
 
 on:
@@ -5,6 +6,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: terraform-aws-deploy
+  cancel-in-progress: false
 
 jobs:
   init:
@@ -65,8 +70,8 @@ jobs:
 
       - name: Terraform Plan
         env:
-          TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
-        run: terraform plan -out=tfplan
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+        run: terraform plan -out=tfplan -lock-timeout=60s
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v4
@@ -79,6 +84,7 @@ jobs:
     name: Terraform Apply
     needs: plan
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -100,6 +106,4 @@ jobs:
           path: .
 
       - name: Terraform Apply
-        env:
-          TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve -lock-timeout=60s tfplan
