@@ -1,0 +1,10 @@
+aws_region         = "us-east-1"
+project_name       = "terraform-1"
+environment        = "dev"
+db_name            = "appdb"
+db_username        = "appadmin"
+db_instance_class  = "db.t3.micro"
+ec2_instance_type  = "t3.micro"
+
+# Do not put a real password in a committed file.
+# Set TF_VAR_db_password in your shell before running Terraform.
